@@ -1,6 +1,7 @@
-import React, { useContext, useState } from "react"
+import React, { useContext, useEffect, useState } from "react"
 import Table from "./Table"
 import { UserContext } from "../context"
+import { type } from "@testing-library/user-event/dist/type"
 
 function Datatable() {
 
@@ -8,6 +9,7 @@ function Datatable() {
     const [name, setName] = useState('')
     const [age, setAge] = useState('')
     const [gender, setGender] = useState('')
+    const [value,setValue] = useState('')
 
     const handleClick = () => {
         dispatch({ type: 'ADD', payload: { name, age, gender } })
@@ -15,7 +17,9 @@ function Datatable() {
         setAge('')
         setGender('')
     }
-
+    useEffect(()=>{
+        sessionStorage.setItem('users',JSON.stringify(state))
+    },[state])
 
     const style = {
         container: 'w-full h-screen bg-blue-200 flex flex-col align-center',
@@ -25,6 +29,14 @@ function Datatable() {
         btnContainer: 'text-center',
         searchInput: 'text-center mt-[16px] mb-[32px]',
         table: 'w-full flex justify-center'
+    }
+
+    const handleEvent = (e) => {
+        if(e.keyCode === 13)
+        {
+            setValue(e.target.value)
+            dispatch({type :'SEARCH',payload: {value}})
+        }
     }
 
     return (
@@ -38,10 +50,10 @@ function Datatable() {
                 <button className={style.addBtn} onClick={handleClick}>ADD</button>
             </div>
             <div className={style.searchInput}>
-                <input className={style.input} type="text" placeholder="Search ......" />
+                <input className={style.input} value={value}  onKeyDown={handleEvent} type="text" placeholder="Search ......" />
             </div>
             <div className={style.table}>
-                <Table />
+                <Table/>
             </div>
         </div>
     )
